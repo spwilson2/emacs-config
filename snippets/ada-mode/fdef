@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: function definition
+# key: fdef
+# --
+function $1($2) return $3;

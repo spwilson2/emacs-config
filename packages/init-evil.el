@@ -9,7 +9,11 @@
   ;(define-key evil-ex-map "e " 'ido-find-file)
   ;(define-key evil-ex-map "b " 'ido-switch-buffer)
 
+  ; Kill the current buffer without leaving the split
+  (evil-ex-define-cmd "kb[uffer]" 'kill-this-buffer)
+
   ;; Use evil for dired
+  (evil-set-initial-state 'term-mode 'emacs)
   ;(evil-set-initial-state 'dired-mode 'evil-normal-state)
   ;(setq evil-emacs-state-modes nil)
   ;(setq evil-insert-state-modes nil)
@@ -33,26 +37,28 @@
   "Vimlike ':q' behavior: close current window if there are split windows;
 otherwise, close current tab (elscreen)."
   (interactive)
-  (let ((one-elscreen (elscreen-one-screen-p))
-        (one-window (one-window-p))
-        )
-    (cond
-     ; if current tab has split windows in it, close the current live window
-     ((not one-window)
-      (delete-window) ; delete the current window
-      (balance-windows) ; balance remaining windows
-      nil)
-     ; if there are multiple elscreens (tabs), close the current elscreen
-     ((not one-elscreen)
-      (elscreen-kill)
-      nil)
-     ; if there is only one elscreen, just try to quit (calling elscreen-kill
-     ; will not work, because elscreen-kill fails if there is only one
-     ; elscreen)
-     (one-elscreen
-      (evil-quit)
-      nil)
-     )))
+    (if (fboundp 'one-elsecreen)
+	(let ((one-elscreen (elscreen-one-screen-p))
+	    (one-window (one-window-p))
+	    )
+	(cond
+	; if current tab has split windows in it, close the current live window
+	((not one-window)
+	(delete-window) ; delete the current window
+	(balance-windows) ; balance remaining windows
+	nil)
+	; if there are multiple elscreens (tabs), close the current elscreen
+	((not one-elscreen)
+	(elscreen-kill)
+	nil)
+	; if there is only one elscreen, just try to quit (calling elscreen-kill
+	; will not work, because elscreen-kill fails if there is only one
+	; elscreen)
+	(one-elscreen
+	(evil-quit)
+	nil)
+	))
+	(evil-quit)))
 
 (defun evil-tabs-configure ()
   "Configure evil-tabs."
@@ -93,21 +99,23 @@ otherwise, close current tab (elscreen)."
 
     ; This has to be before we invoke evil-mode due to:
     ; https://github.com/cofi/evil-leader/issues/10
-    (use-package evil-leader
-      :ensure t
-      :init (global-evil-leader-mode)
-      :config
-      (setq evil-leader/in-all-states t)))
+    ;(use-package evil-leader
+    ;  :ensure t
+    ;  :init (global-evil-leader-mode)
+    ;  :config
+    ;  (setq evil-leader/in-all-states t)))
 
   :config
   (progn
-    (use-package evil-tabs
-      :ensure t
-      :init
-      :config
-      (progn
-        (evil-tabs-configure)
-        (global-evil-tabs-mode t)))
+    ; Fucks with the term, so not using...
+    ;(use-package evil-tabs
+    ;  :ensure t
+    ;  :init
+    ;  :config
+    ;  (progn
+    ;    (evil-tabs-configure)
+    ;    ;(global-evil-tabs-mode t)
+    ;	))
 
     ; MUST BE AFTER evil-tabs else it breaks initial evil 
     ; https://github.com/krisajenkins/evil-tabs/issues/12
@@ -117,6 +125,6 @@ otherwise, close current tab (elscreen)."
     ; Redefine quit to behave as vim tabs.
     (evil-define-command my-quit ()
 	(vimlike-quit))
-    (evil-ex-define-cmd "q[uit]" 'my-quit)))
+    (evil-ex-define-cmd "q[uit]" 'my-quit))))
 
 (provide 'init-evil)

@@ -29,7 +29,12 @@
 (require 'init-languages)
 
 (defconst elpa-modes
-          '(init-evil)
+  '(
+    init-xcscope
+    init-evil
+    init-yasnippet
+    init-shell
+    )
           "Configuration for modes loaded via package.el")
 
 (bw-require-list elpa-modes)
