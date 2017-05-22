@@ -71,14 +71,18 @@
     )
   :config
   (progn
-    (evil-mode 1)
     (use-package evil-tabs
       :ensure t
       :init
       :config
-      (evil-tabs-configure)
-      (global-evil-tabs-mode t)
+      (progn
+        (evil-tabs-configure)
+        (global-evil-tabs-mode t)
+        )
       )
+    ; MUST BE AFTER evil-tabs else it breaks initial evil 
+    ; https://github.com/krisajenkins/evil-tabs/issues/12
+    (evil-mode 1)
     (evil-configure)
     )
   )
