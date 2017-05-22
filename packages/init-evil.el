@@ -1,15 +1,18 @@
 (defun evil-configure ()
   "Confiure evil."
-  (define-key evil-ex-map "e " 'ido-find-file)
-  (define-key evil-ex-map "b " 'ido-switch-buffer)
-
-  ;; jj escapes to normal mode
-  (define-key evil-insert-state-map (kbd "j") 'bw-evil-escape-if-next-char-is-j)
+  ;(define-key evil-ex-map "e " 'ido-find-file)
+  ;(define-key evil-ex-map "b " 'ido-switch-buffer)
   (setq
    ;; h/l wrap around to next lines
    evil-cross-lines t
    evil-want-C-u-scroll t
    )
+
+  ;; Use evil for dired
+  ;(evil-set-initial-state 'dired-mode 'evil-normal-state)
+  (setq evil-emacs-state-modes nil)
+  (setq evil-insert-state-modes nil)
+  (setq evil-motion-state-modes nil)
 
   ;; esc should always quit: http://stackoverflow.com/a/10166400/61435
   (define-key evil-normal-state-map [escape] 'keyboard-quit)
@@ -50,30 +53,25 @@
   )
 
 (use-package evil
-	     ; make sure autoinstalled
-	     :ensure t
-	     :init
-             :config
+  :ensure t
+  :init
+  (progn
     ;; if we don't have this evil overwrites the cursor color
     (setq evil-default-cursor t)
 
-    ;; leader shortcuts
-
     ;; This has to be before we invoke evil-mode due to:
     ;; https://github.com/cofi/evil-leader/issues/10
-    (use-package evil-leader
-      :ensure t
-      :init (global-evil-leader-mode)
-      :config
-      (progn
-        (setq evil-leader/in-all-states t))
+    ;(use-package evil-leader
+    ;  :ensure t
+    ;  :init (global-evil-leader-mode)
+    ;  :config
+    ;  (setq evil-leader/in-all-states t))
 
     ;; boot evil by default
-    (evil-mode 1))
+    )
   :config
   (progn
-    (evil-configure)
-
+    (evil-mode 1)
     (use-package evil-tabs
       :ensure t
       :init
@@ -81,9 +79,8 @@
       (evil-tabs-configure)
       (global-evil-tabs-mode t)
       )
-
+    (evil-configure)
     )
   )
-
 
 (provide 'init-evil)

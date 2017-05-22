@@ -25,6 +25,8 @@
 
 (require 'init-visuals)
 (require 'init-backups)
+(require 'init-misc)
+(require 'init-languages)
 
 (defconst elpa-modes
           '(init-evil)
