@@ -23,7 +23,7 @@
 (require 'init-package-archives)
 (require 'init-use-package)
 
-;; (require 'init-visuals)
+(require 'init-visuals)
 (require 'init-backups)
 
 (defconst elpa-modes
