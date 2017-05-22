@@ -1,12 +1,13 @@
+(defun pre-evil-configure()
+  (setq
+   ;; h/l wrap around to next lines
+   evil-cross-lines t
+   evil-want-C-u-scroll t))
+
 (defun evil-configure ()
   "Confiure evil."
   ;(define-key evil-ex-map "e " 'ido-find-file)
   ;(define-key evil-ex-map "b " 'ido-switch-buffer)
-  (setq
-   ;; h/l wrap around to next lines
-   evil-cross-lines t
-   evil-want-C-u-scroll t
-   )
 
   ;; Use evil for dired
   ;(evil-set-initial-state 'dired-mode 'evil-normal-state)
@@ -80,6 +81,8 @@ otherwise, close current tab (elscreen)."
   (eval-after-load "elscreen"
     '(add-hook 'elscreen-screen-update-hook 'elscreen-frame-title-update))
   )
+
+(pre-evil-configure)
 
 (use-package evil
   :ensure t
