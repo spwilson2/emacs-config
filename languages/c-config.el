@@ -18,22 +18,27 @@
 ;  (c-set-offset 'case-label '+))       ; indent case labels by c-indent-level, too
 
 
-;(defconst my-c-style
-;  '
+(defun c-generic-prefer () 
+  ;; always add a trailing newline - it's POSIX
+  (setq require-final-newline t)
+  ;; nuke trailing whitespace when writing to a file
+  (add-hook 'write-file-hooks 'delete-trailing-whitespace))
+(add-hook 'c-mode-hook 'c-generic-prefer)
 
-; <return> should start a comment. 
+;; <return> should continue a comment in c code
 (defun c-enter-continues-comments ()
-    (local-set-key (kbd "RET") 'c-indent-new-comment-line)
-    )
+    (local-set-key (kbd "RET") 'c-indent-new-comment-line))
 (add-hook 'c-mode-hook 'c-enter-continues-comments)
 
-(defun maybe-linux-style ()
+
+;; Try and autodetect linux
+(defun detect-linux-style ()
   (when (and buffer-file-name
 	     (string-match "linux" buffer-file-name))
     (c-set-style "linux")))
-; Add a hook to try and guess if I'm editing a linux source
-(add-hook 'c-mode-hook 'maybe-linux-style)
+(add-hook 'c-mode-hook 'detect-linux-style)
 
+;; Default C style is linux.
 (setq-default c-default-style "linux")
 
 (provide 'c-config)
