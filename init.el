@@ -47,6 +47,7 @@
     init-vimrc
     init-ada-mode
     init-scrolling
+    init-nlinum
     )
           "Configuration for modes loaded via package.el")
 
