@@ -28,6 +28,7 @@
 
 (use-package evil
   :ensure t
+  :diminish undo-tree-mode
   :init
   (progn
     ;; if we don't have this evil overwrites the cursor color

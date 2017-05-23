@@ -1,7 +1,9 @@
 (use-package flycheck
   :ensure t
   :config
-  (global-flycheck-mode)
+  (progn
+    (setq flycheck-highlighting-mode nil)
+    (global-flycheck-mode))
   )
 
 (provide 'init-flycheck)

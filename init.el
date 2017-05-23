@@ -23,6 +23,7 @@
 (require 'init-package-archives)
 (require 'init-use-package)
 
+(require 'init-hotkeys)
 (require 'init-visuals)
 (require 'init-backups)
 (require 'init-misc)
@@ -38,16 +39,30 @@
 
 (defconst elpa-modes
   '(
+    ;; Git enabled package management
     init-quelpa ; This must be first incase any other packages require it.
+    ;; Emacs-Vim
     init-evil
+    ;; Vimlike tabs
     init-eyebrowse
+    ;; Syntax checking
     init-flycheck
+    ;; Cscope integration
     init-xcscope
+    ;; Code generation/skeleton
     init-yasnippet
+    ;; A vimrc mode
     init-vimrc
+    ;; The most up to date version of ada
     init-ada-mode
+    ;; Allows smooth scrolling
     init-scrolling
+    ;; Faster version of line numbers
     init-nlinum
+    ;; Autcompletion engine
+    init-ivy
+    ;; Adds dropdowns for autocompletion
+    init-auto-complete
     )
           "Configuration for modes loaded via package.el")
 
