@@ -29,37 +29,6 @@
   (define-key minibuffer-local-isearch-map [escape] 'abort-recursive-edit)
  )
 
-
-; https://zuttobenkyou.wordpress.com/2012/06/15/emacs-vimlike-tabwindow-navigation/
-; Either close the current elscreen, or if only one screen, use the ":q" Evil
-; command; this simulates the ":q" behavior of Vim when used with tabs.
-(defun vimlike-quit ()
-  "Vimlike ':q' behavior: close current window if there are split windows;
-otherwise, close current tab (elscreen)."
-  (interactive)
-    (if (fboundp 'one-elsecreen)
-	(let ((one-elscreen (elscreen-one-screen-p))
-	    (one-window (one-window-p))
-	    )
-	(cond
-	; if current tab has split windows in it, close the current live window
-	((not one-window)
-	(delete-window) ; delete the current window
-	(balance-windows) ; balance remaining windows
-	nil)
-	; if there are multiple elscreens (tabs), close the current elscreen
-	((not one-elscreen)
-	(elscreen-kill)
-	nil)
-	; if there is only one elscreen, just try to quit (calling elscreen-kill
-	; will not work, because elscreen-kill fails if there is only one
-	; elscreen)
-	(one-elscreen
-	(evil-quit)
-	nil)
-	))
-	(evil-quit)))
-
 (defun evil-tabs-configure ()
   "Configure evil-tabs."
   (setq elscreen-display-tab nil) ; disable tabs display
@@ -107,24 +76,17 @@ otherwise, close current tab (elscreen)."
 
   :config
   (progn
-    ; Fucks with the term, so not using...
-    ;(use-package evil-tabs
-    ;  :ensure t
-    ;  :init
-    ;  :config
-    ;  (progn
-    ;    (evil-tabs-configure)
-    ;    ;(global-evil-tabs-mode t)
-    ;	))
+    (use-package evil-tabs
+      :init
+      (quelpa '(evil-tabs :repo "spwilson2/evil-tabs" :fetcher github :branch "eyebrowse"))
+      :config
+      (progn
+	(evil-tabs-configure)
+	(global-evil-tabs-mode t)))
 
-    ; MUST BE AFTER evil-tabs else it breaks initial evil 
-    ; https://github.com/krisajenkins/evil-tabs/issues/12
+    ;; MUST BE AFTER evil-tabs else it breaks initial evil
+    ;; https://github.com/krisajenkins/evil-tabs/issues/12
     (evil-mode 1)
-    (evil-configure)
-
-    ; Redefine quit to behave as vim tabs.
-    (evil-define-command my-quit ()
-	(vimlike-quit))
-    (evil-ex-define-cmd "q[uit]" 'my-quit))))
+    (evil-configure))))
 
 (provide 'init-evil)

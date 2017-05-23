@@ -5,7 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (editorconfig zenburn-theme zenburn yasnippet xcscope use-package tabbar evil-visual-mark-mode evil-tabs evil-leader escreen))))
+    (smooth-scrolling ada-mode vimrc-mode yasnippet xcscope flycheck evil-tabs eyebrowse dash evil quelpa zenburn-theme use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

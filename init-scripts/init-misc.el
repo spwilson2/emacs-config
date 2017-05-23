@@ -10,6 +10,10 @@
       ;; Show the *scratch* on startup
       initial-buffer-choice t)
 
+; Smooth scrolling
+;(setq-default scroll-step 1)
+;provided by package smooth-scrolling so commented out
+
 ;; Prompt for y-n
 (defalias 'yes-or-no-p 'y-or-n-p)
 

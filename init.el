@@ -28,12 +28,25 @@
 (require 'init-misc)
 (require 'init-languages)
 
+(defconst basic-modes
+  '(
+    init-shell
+    )
+  "Configuration for modes I have personally defined."
+  )
+(bw-require-list basic-modes)
+
 (defconst elpa-modes
   '(
-    init-xcscope
+    init-quelpa ; This must be first incase any other packages require it.
     init-evil
+    init-eyebrowse
+    init-flycheck
+    init-xcscope
     init-yasnippet
-    init-shell
+    init-vimrc
+    init-ada-mode
+    init-scrolling
     )
           "Configuration for modes loaded via package.el")
 
