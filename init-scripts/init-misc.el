@@ -14,6 +14,10 @@
 ;(setq-default scroll-step 1)
 ;provided by package smooth-scrolling so commented out
 
+;; Use google-chrome for interwebs.
+(setq browse-url-browser-function 'browse-url-generic
+          browse-url-generic-program "google-chrome")
+
 ;; Prompt for y-n
 (defalias 'yes-or-no-p 'y-or-n-p)
 
