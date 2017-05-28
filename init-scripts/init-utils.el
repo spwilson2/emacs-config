@@ -75,7 +75,7 @@
   "Edit this file as sudo"
   (interactive "P")
   (if (or arg (not buffer-file-name))
-      (find-file (concat "/sudo::" (ido-read-file-name "File: ")))
+      (find-file (concat "/sudo::" (read-file-name "File: ")))
     (find-alternate-file (concat "/sudo::" buffer-file-name))))
 
 (defun chomp (str)

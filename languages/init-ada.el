@@ -14,5 +14,6 @@
 ;; Normal Indentation rules
 ;; ada-indent
 
+(setq-default ada-skel-initial-string "")
 
 (provide 'init-ada)
