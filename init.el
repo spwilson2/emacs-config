@@ -299,6 +299,8 @@ user code in there besides modifying the variable values."
 
   ;; Make tabs ALWAYS act as tabs
   ;; (global-set-key (kbd "TAB") 'tab-to-tab-stop)
+  (evil-ex-define-cmd "kb[uffer]" 'kill-this-buffer)
+  (evil-set-initial-state 'term-mode 'insert)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Misc Configuration
@@ -340,6 +342,16 @@ user code in there besides modifying the variable values."
                 '((auto-completion :variables
                                    auto-completion-enable-snippets-in-popup t)))
   (define-key yas-minor-mode-map (kbd "TAB") 'yas-expand)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Lang Configurations
+  ;;
+  (setq dotspacemacs-path "~/.spacemacs.d/")
+  (push (concat dotspacemacs-path "languages") load-path)
+  (require 'cc-config)
+  ;;
+  ;; Lang Configurations    ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   )
 
 (custom-set-variables
