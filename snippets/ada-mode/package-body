@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: package body 
+# key: package body 
+# --
+package body $1 is
+	$0
+end $1;
