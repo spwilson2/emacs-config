@@ -354,6 +354,9 @@ user code in there besides modifying the variable values."
   ;; Lang Configurations    ;;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (setq tramp-persistency-file-name "/tmp/.tramp")
+  ;; Tramp shouldn't forget password in session
+  (setq-default password-cache t)
+  (setq-default password-cache-expiry nil)
   )
 
 (custom-set-variables
