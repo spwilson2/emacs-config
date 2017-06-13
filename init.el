@@ -357,7 +357,33 @@ user code in there besides modifying the variable values."
   ;; Tramp shouldn't forget password in session
   (setq-default password-cache t)
   (setq-default password-cache-expiry nil)
-  )
+
+  ;; Set org mode archive
+  (setq org-archive-location "~/.emacs.d/archive/archive.org")
+
+
+  ;;;;;;;
+  (progn
+    (unless window-system
+      (add-hook 'linum-before-numbering-hook
+                (lambda ()
+                  (setq-local linum-format-fmt
+                              (let ((w (length (number-to-string
+                                                (count-lines (point-min) (point-max))))))
+                                (concat " %" (number-to-string w) "d"))))))
+
+    (defun linum-format-func (line)
+      (concat
+       (propertize (format linum-format-fmt line) 'face 'linum)
+       ;;(propertize " " 'face 'mode-line)
+      ))
+
+    (unless window-system
+      (setq linum-format 'linum-format-func)))
+  ;;;;;;;;
+  ;; Turn off parenthesis completion
+  (spacemacs/toggle-smartparens-globally-off)
+)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
