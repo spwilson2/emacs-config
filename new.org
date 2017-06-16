@@ -83,7 +83,6 @@ Function names follow these conventions:
 
 #+END_SRC
 ** Initialize various directory paths.
-
 *** Crate a directory for temporary stuff
    #+BEGIN_SRC emacs-lisp
      (defconst sw-tmp-local-dir
@@ -114,6 +113,10 @@ Function names follow these conventions:
      (make-directory sw-autosaves-dir t)
    #+END_SRC
 
+*** Set the org mode archive
+#+BEGIN_SRC emacs-lisp
+(setq org-archive-location "~/.emacs.d/archive/archive.org")
+#+END_SRC
 *** Save the history and custom file in temp too
    #+BEGIN_SRC emacs-lisp
 (make-directory (setq sw-tmp-local-dir (concat sw-dotfiles-dir ".tmp/")) t)
@@ -135,6 +138,24 @@ Function names follow these conventions:
       kept-old-versions 2
       version-control t)   ; Use versioned backups
    #+END_SRC
+** Do other default emacs customization
+*** Set default browser
+    #+BEGIN_SRC emacs-lisp
+  ;; Use google-chrome for interwebs.
+  (setq browse-url-browser-function 'browse-url-generic
+	browse-url-generic-program "google-chrome")
+    #+END_SRC
+*** Other miscellaneous stuff
+    #+BEGIN_SRC emacs-lisp
+;; Don't clobber things in the system clipboard when killing emacs
+  (setq save-interprogram-paste-before-kill t)
+
+  ;; Save minibuffer history across sessions
+  (savehist-mode 1)
+
+  ;; Don't paste at mouse, use the cursor.
+  (setq mouse-yank-at-point t)
+    #+END_SRC
 ** Set up package management
 *** Set up repos
 
@@ -166,7 +187,6 @@ Function names follow these conventions:
 #+END_SRC
 
 ** Setup visual preferences
-*** Change things about the default emacs editor
    #+BEGIN_SRC emacs-lisp
 ;; Use the zenburn theme
 (if (not (bound-and-true-p visual-initialized))
@@ -214,6 +234,10 @@ Now, the moment we've all been waiting for, various plugin installs and configur
      (setq ac-comphist-file (concat sw-tmp-local-dir "ac-comphist.dat"))))
     #+END_SRC
 
+*** cscope
+   #+BEGIN_SRC emacs-lisp
+   (use-package xcscope :ensure t)
+   #+END_SRC
 *** evil-mode
 
 **** Do some stuff before we initialize evil
@@ -267,12 +291,11 @@ Now, the moment we've all been waiting for, various plugin installs and configur
      #+BEGIN_SRC emacs-lisp
 (defun sw/evil-mode/configure ()
   "Confiure evil."
-  ;(define-key evil-ex-map "e " 'ido-find-file)
-  ;(define-key evil-ex-map "b " 'ido-switch-buffer)
+  ;;(define-key evil-ex-map "e " 'ido-find-file)
+  ;;(define-key evil-ex-map "b " 'ido-switch-buffer)
 
   ; Kill the current buffer without leaving the split
   (evil-ex-define-cmd "kb[uffer]" 'kill-this-buffer)
-
   (evil-set-initial-state 'term-mode 'insert)
 
   ;; esc should always quit: http://stackoverflow.com/a/10166400/61435
@@ -288,6 +311,29 @@ Now, the moment we've all been waiting for, various plugin installs and configur
 (sw/evil-mode/configure)
    #+END_SRC
 
+*** evil-leader
+#+BEGIN_SRC emacs-lisp
+;;  (use-package evil-mode
+;;    :ensure
+;;    :config
+;;    (global-evil-leader-mode))
+#+END_SRC
+*** evil-org-mode
+    #+BEGIN_SRC emacs-lisp
+      (use-package evil-org
+	:ensure t
+	:after org
+	:config
+	;; Open links with gt
+	(progn
+	  (add-hook 'org-mode-hook 'evil-org-mode)
+	  (add-hook 'evil-org-mode-hook
+		    (lambda ()
+		      (progn
+			;;(evil-define-key 'normal org-mode-map (kbd "g f") 'org-open-at-point)   
+			(message "RUnning this")
+			(evil-org-set-key-theme))))))
+    #+END_SRC
 *** eyebrowse
 A tab system
    #+BEGIN_SRC emacs-lisp
@@ -362,10 +408,54 @@ A faster line numbering system
    #+BEGIN_SRC emacs-lisp
    #+END_SRC
 
-*** cscope
+*** whitespace-mode
    #+BEGIN_SRC emacs-lisp
-   (use-package xcscope :ensure t)
+  (use-package whitespace
+    :defer t
+    :init
+    (progn
+      (setq sw-show-trailing-whitespace t)
+      (defun sw//show-trailing-whitespace ()
+        (when sw-show-trailing-whitespace
+          (set-face-attribute 'trailing-whitespace nil
+                              :background
+                              (face-attribute 'font-lock-comment-face
+                                              :foreground))
+          (setq show-trailing-whitespace 1)))
+      (add-hook 'prog-mode-hook 'sw//show-trailing-whitespace)
+
+      (defun sw//set-whitespace-style-for-diff ()
+        "Whitespace configuration for `diff-mode'"
+        (setq-local whitespace-style '(face
+                                       tabs
+                                       tab-mark
+                                       spaces
+                                       space-mark
+                                       trailing
+                                       indentation::space
+                                       indentation::tab
+                                       newline
+                                       newline-mark)))
+      (add-hook 'diff-mode-hook 'whitespace-mode)
+      (add-hook 'diff-mode-hook 'sw//set-whitespace-style-for-diff))
+    :config
+    (progn
+      (set-face-attribute 'whitespace-space nil
+                          :background nil
+                          :foreground (face-attribute 'font-lock-warning-face
+                                                      :foreground))
+      (set-face-attribute 'whitespace-tab nil
+                          :background nil)
+      (set-face-attribute 'whitespace-indentation nil
+                          :background nil)))
    #+END_SRC
+*** indent-guide
+    Show indent levels.
+
+   #+BEGIN_SRC emacs-lisp
+(use-package indent-guide :ensure)
+   #+END_SRC
+
 *** yasnippet
     An easy to use snippet macro system.
 
@@ -374,14 +464,8 @@ A faster line numbering system
   :ensure t
   :diminish yas-minor-mode
   :config
+  ;; (define-key yas-minor-mode-map (kbd "TAB") 'yas-expand)
   (yas-global-mode 1))
-   #+END_SRC
-
-*** indent-guide
-    Show indent levels.
-
-   #+BEGIN_SRC emacs-lisp
-(use-package indent-guide :ensure)
    #+END_SRC
 
 ** Language Configurations
@@ -445,52 +529,23 @@ A faster line numbering system
                                      (ws-butler-mode t)))
    #+END_SRC
 
+*** Org
+   #+BEGIN_SRC emacs-lisp
+     (defun sw-evil-org-open-link-or-file-at-point () 
+       "Try to open the link or if unable to do that try to open it as a file."
+       (interactive)
+       ;;(condition-case nil (org-open-at-point) (user-error (find-file-at-point))))
+       (condition-case nil (org-open-at-point) (user-error (find-file-at-point))))
+
+     (evil-define-key 'normal org-mode-map (kbd "g f") 'sw-evil-org-open-link-or-file-at-point)
+    #+END_SRC
+
 * Reminders
   This is some reminder stuff incase I ever want to change or do these things...
-
+  
 ** [[https://github.com/noctuid/evil-guide#keybindings-and-states][Add an evil keybinding]]
-   #+BEGIN_SRC emacs-lisp
-  (use-package whitespace
-    :defer t
-    :init
-    (progn
-      (setq sw-show-trailing-whitespace t)
-      (defun sw//show-trailing-whitespace ()
-        (when sw-show-trailing-whitespace
-          (set-face-attribute 'trailing-whitespace nil
-                              :background
-                              (face-attribute 'font-lock-comment-face
-                                              :foreground))
-          (setq show-trailing-whitespace 1)))
-      (add-hook 'prog-mode-hook 'sw//show-trailing-whitespace)
-
-      (defun sw//set-whitespace-style-for-diff ()
-        "Whitespace configuration for `diff-mode'"
-        (setq-local whitespace-style '(face
-                                       tabs
-                                       tab-mark
-                                       spaces
-                                       space-mark
-                                       trailing
-                                       indentation::space
-                                       indentation::tab
-                                       newline
-                                       newline-mark)))
-      (add-hook 'diff-mode-hook 'whitespace-mode)
-      (add-hook 'diff-mode-hook 'sw//set-whitespace-style-for-diff))
-    :config
-    (progn
-      (set-face-attribute 'whitespace-space nil
-                          :background nil
-                          :foreground (face-attribute 'font-lock-warning-face
-                                                      :foreground))
-      (set-face-attribute 'whitespace-tab nil
-                          :background nil)
-      (set-face-attribute 'whitespace-indentation nil
-                          :background nil)))
-   #+END_SRC
-   #+BEGIN_SRC emacs-lisp
-   #+END_SRC
+ 
+**  
    #+BEGIN_SRC emacs-lisp
    #+END_SRC
    #+BEGIN_SRC emacs-lisp
