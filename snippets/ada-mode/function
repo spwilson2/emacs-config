@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: function
-# key: function
-# --
-function $1($2) return $3 is
-	$0
-begin
-end $1;
