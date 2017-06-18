@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: record 
+# key:  record
+# 
+# --
+record
+	$0
+end record;

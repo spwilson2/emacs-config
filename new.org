@@ -338,8 +338,8 @@ Now, the moment we've all been waiting for, various plugin installs and configur
 (defun sw/evil-mode/configure ()
   "Configure basic evil."
   
-  ;; Default for term-mode should be evil
-  (evil-set-initial-state 'term-mode 'insert)
+  ;; Default for term-mode should be emacs 
+  (evil-set-initial-state 'term-mode 'emacs)
   
   ;; esc should always quit: http://stackoverflow.com/a/10166400/61435
   (define-key evil-normal-state-map [escape] 'keyboard-quit)
@@ -636,6 +636,17 @@ Some keybindings that aren't language specific. Language specific keybings are i
 
   (sw/evil-mode/configure-bindings)
     #+END_SRC
+** term-mode
+   #+BEGIN_SRC emacs-lisp
+     (eval-after-load "term"
+       (progn
+       ;; Add pasting from emacs as default to the terminal
+	 (define-key term-raw-map (kbd "C-y") 'term-paste)
+
+	 ;; Add changing the window to the terminal
+	 (define-key term-raw-map (kbd "C-w") nil)
+	 (define-key term-raw-map (kbd "C-w C-w") '(lambda () (interactive) (other-window 1)))))
+   #+END_SRC
 ** Other user friendly functions
    #+BEGIN_SRC emacs-lisp
      (defun messages  ()
