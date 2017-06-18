@@ -9,7 +9,7 @@ Function names follow these conventions:
 + Variables follow these conventions:
 + spacemacs-xxx is a variable
 + spacemacs--xxx is a private variable (implementation details)
-
+* Base emacs setup
 ** Set up emacs server
   #+BEGIN_SRC emacs-lisp
     (when (require 'server nil t)
@@ -83,7 +83,12 @@ Function names follow these conventions:
 
 #+END_SRC
 ** Initialize various directory paths.
-*** Crate a directory for temporary stuff
+*** Name this config
+    #+BEGIN_SRC emacs-lisp
+      (defconst sw-config-file "~/.emacs.d/new.org"
+	"The path to my configuration file.")
+    #+END_SRC
+*** Create a directory for temporary stuff
    #+BEGIN_SRC emacs-lisp
      (defconst sw-tmp-local-dir
        "~/.emacs.d/.tmp"
@@ -145,6 +150,44 @@ Function names follow these conventions:
   (setq browse-url-browser-function 'browse-url-generic
 	browse-url-generic-program "google-chrome")
     #+END_SRC
+*** Fix some ansi-term stuff
+#+BEGIN_SRC emacs-lisp
+;; Close the terminal buffer once it exits
+;; http://echosa.github.io/blog/2012/06/06/improving-ansi-term/
+(defadvice term-sentinel (around my-advice-term-sentinel (proc msg))
+  (if (memq (process-status proc) '(signal exit))
+      (let ((buffer (process-buffer proc)))
+        ad-do-it
+        (kill-buffer buffer))
+    ad-do-it))
+(ad-activate 'term-sentinel)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+  ;; Always use bash as default shell
+  (defvar my-term-shell "/bin/bash")
+  (defadvice ansi-term (before force-bash)
+    (interactive (list my-term-shell)))
+  (ad-activate 'ansi-term)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+  ;; Use utf-8 encoding
+  (defun my-term-use-utf8 ()
+    (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))
+  (add-hook 'term-exec-hook 'my-term-use-utf8)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+  ;; Allow pasting in the terminal
+  ;;(defun my-term-paste (&amp string)
+  ;; (interactive)
+  ;; (process-send-string
+  ;;  (get-buffer-process (current-buffer))
+  ;;  (if string string (current-kill 0))))
+  ;;(defun my-term-hook ()
+  ;;  (goto-address-mode)
+  ;;  (define-key term-raw-map "\C-y" 'my-term-paste))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+#+END_SRC
 *** Other miscellaneous stuff
     #+BEGIN_SRC emacs-lisp
 ;; Don't clobber things in the system clipboard when killing emacs
@@ -155,7 +198,11 @@ Function names follow these conventions:
 
   ;; Don't paste at mouse, use the cursor.
   (setq mouse-yank-at-point t)
+  
+  ;; It's never worth making me type out yes or no
+  (defalias 'yes-or-no-p 'y-or-n-p)
     #+END_SRC
+* Packages
 ** Set up package management
 *** Set up repos
 
@@ -188,7 +235,6 @@ Function names follow these conventions:
 
 ** Setup visual preferences
    #+BEGIN_SRC emacs-lisp
-;; Use the zenburn theme
 (if (not (bound-and-true-p visual-initialized))
     (progn
       (defconst visual-initialized t
@@ -202,7 +248,7 @@ Function names follow these conventions:
       (tool-bar-mode -1)
       ; Better word wrapping
       (add-hook 'text-mode-hook 'visual-line-mode)
-      ; Show opposite paranthesis
+      ; Show opposite parentheses
       (show-paren-mode 1)
       (setq show-paren-delay 0) ; Without delay
       )
@@ -276,7 +322,7 @@ Now, the moment we've all been waiting for, various plugin installs and configur
        (progn
          (use-package evil-tabs
            :init
-           (quelpa '(evil-tabs :repo "spwilson2/evil-tabs" :fetcher github :branch "eyebrowse"))
+           (quelpa '(evil-tabs :repo "spwilson2/evil-tabs" :fetcher github))
            :config
            (progn
              (global-evil-tabs-mode t)))
@@ -290,14 +336,11 @@ Now, the moment we've all been waiting for, various plugin installs and configur
 
      #+BEGIN_SRC emacs-lisp
 (defun sw/evil-mode/configure ()
-  "Confiure evil."
-  ;;(define-key evil-ex-map "e " 'ido-find-file)
-  ;;(define-key evil-ex-map "b " 'ido-switch-buffer)
-
-  ; Kill the current buffer without leaving the split
-  (evil-ex-define-cmd "kb[uffer]" 'kill-this-buffer)
+  "Configure basic evil."
+  
+  ;; Default for term-mode should be evil
   (evil-set-initial-state 'term-mode 'insert)
-
+  
   ;; esc should always quit: http://stackoverflow.com/a/10166400/61435
   (define-key evil-normal-state-map [escape] 'keyboard-quit)
   (define-key evil-visual-state-map [escape] 'keyboard-quit)
@@ -305,8 +348,7 @@ Now, the moment we've all been waiting for, various plugin installs and configur
   (define-key minibuffer-local-ns-map [escape] 'abort-recursive-edit)
   (define-key minibuffer-local-completion-map [escape] 'abort-recursive-edit)
   (define-key minibuffer-local-must-match-map [escape] 'abort-recursive-edit)
-  (define-key minibuffer-local-isearch-map [escape] 'abort-recursive-edit)
- )
+  (define-key minibuffer-local-isearch-map [escape] 'abort-recursive-edit))
 
 (sw/evil-mode/configure)
    #+END_SRC
@@ -330,7 +372,7 @@ Now, the moment we've all been waiting for, various plugin installs and configur
 	  (add-hook 'evil-org-mode-hook
 		    (lambda ()
 		      (progn
-			;;(evil-define-key 'normal org-mode-map (kbd "g f") 'org-open-at-point)   
+			;;(evil-define-key 'normal org-mode-map (kbd "g f") 'org-open-at-point)
 			(message "RUnning this")
 			(evil-org-set-key-theme))))))
     #+END_SRC
@@ -396,6 +438,11 @@ A faster line numbering system
     (unless window-system
     (setq linum-format 'linum-format-func))))
    #+END_SRC
+*** persp-mode
+    #+BEGIN_SRC emacs-lisp
+      (use-package persp-mode
+	:ensure t)
+    #+END_SRC
 *** smooth-scrolling
    #+BEGIN_SRC emacs-lisp
      (use-package smooth-scrolling
@@ -456,6 +503,17 @@ A faster line numbering system
 (use-package indent-guide :ensure)
    #+END_SRC
 
+*** tramp
+   #+BEGIN_SRC emacs-lisp
+     (setq tramp-persistency-file-name (sw/join-dirs sw-tmp-local-dir "tramp"))
+     ;; Tramp shouldn't forget password in session
+     (setq-default password-cache t)
+     (setq-default password-cache-expiry nil)
+   #+END_SRC 
+*** tramp-term
+#+BEGIN_SRC emacs-lisp
+(use-package tramp-term :ensure)
+#+END_SRC
 *** yasnippet
     An easy to use snippet macro system.
 
@@ -464,10 +522,10 @@ A faster line numbering system
   :ensure t
   :diminish yas-minor-mode
   :config
-  ;; (define-key yas-minor-mode-map (kbd "TAB") 'yas-expand)
-  (yas-global-mode 1))
+  (progn
+  ;(define-key yas-minor-mode-map (kbd "TAB") 'yas-expand)
+  (yas-global-mode 1)))
    #+END_SRC
-
 ** Language Configurations
    I will now describe my language specific settings and mode configurations.
    Most of the stuff for configuring these can be autoloaded to save time at startup.
@@ -500,7 +558,7 @@ A faster line numbering system
        (local-set-key (kbd "RET") 'c-context-line-break))
 
      ;; gem5 config,
-     ;; TODO: Auto add hook not just to mode but to buffer if path contains gem5
+     ;; TODO: Auto add hook not to mode but to buffer if path contains gem5
      (add-hook 'c-mode-common-hook (lambda ()
                                      ()
                                      (indent-guide-mode t)
@@ -530,27 +588,58 @@ A faster line numbering system
    #+END_SRC
 
 *** Org
+
+    Open a link with vim semantics in org mode.
    #+BEGIN_SRC emacs-lisp
-     (defun sw-evil-org-open-link-or-file-at-point () 
+     (defun sw-evil-org-open-link-or-file-at-point ()
        "Try to open the link or if unable to do that try to open it as a file."
        (interactive)
        ;;(condition-case nil (org-open-at-point) (user-error (find-file-at-point))))
        (condition-case nil (org-open-at-point) (user-error (find-file-at-point))))
 
      (evil-define-key 'normal org-mode-map (kbd "g f") 'sw-evil-org-open-link-or-file-at-point)
+     
+     ;; The org open command should be marked as a jump (added to the jump list), it doesn't
+     ;; work great but it's better than nothing.
+     (evil-add-command-properties #'org-open-at-point :jump t)
+     
     #+END_SRC
 
+* Keybindings
+Some keybindings that aren't language specific. Language specific keybings are in the [[Language Configurations]] section.
+
+** evil-mode
+    #+BEGIN_SRC emacs-lisp
+    (defun sw/evil-mode/configure-bindings ()
+
+  ;;(define-key evil-ex-map "e " 'ido-find-file)
+  ;;(define-key evil-ex-map "b " 'ido-switch-buffer)
+
+  ;; Kill the current buffer without leaving the split
+  (evil-ex-define-cmd "kb[uffer]" 'kill-this-buffer)
+  ;; Open up a list of open buffers
+  (evil-ex-define-cmd "b[uffers]" 'list-buffers)
+  ;; Open an ansi terminal
+  (evil-ex-define-cmd "term" 'ansi-term)
+
+  (define-key evil-normal-state-map "[b" 'evil-next-buffer)
+  (define-key evil-normal-state-map "]b" 'evil-prev-buffer))
+
+  (sw/evil-mode/configure-bindings)
+    #+END_SRC
+** Other user friendly functions
+   #+BEGIN_SRC emacs-lisp
+     (defun messages  ()
+       "Open the messages buffer."
+       (interactive)
+       (switch-to-buffer "*Messages*"))
+
+     (defun reload-config ()
+       "Reload my config file."
+       (interactive)
+       (org-babel-load-file sw-config-file))
+   #+END_SRC
 * Reminders
   This is some reminder stuff incase I ever want to change or do these things...
-  
+
 ** [[https://github.com/noctuid/evil-guide#keybindings-and-states][Add an evil keybinding]]
- 
-**  
-   #+BEGIN_SRC emacs-lisp
-   #+END_SRC
-   #+BEGIN_SRC emacs-lisp
-   #+END_SRC
-   #+BEGIN_SRC emacs-lisp
-   #+END_SRC
-   #+BEGIN_SRC emacs-lisp
-   #+END_SRC
