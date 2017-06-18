@@ -372,6 +372,15 @@ Now, the moment we've all been waiting for, various plugin installs and configur
 	  (add-hook 'evil-org-mode-hook
 		    (lambda ()
 		      (progn
+			;; Remove the old bindings
+			(evil-define-key 'normal evil-org-mode-map (kbd "<tab>") nil)
+			(evil-define-key 'visual evil-org-mode-map (kbd "<tab>") nil)
+			(evil-define-key 'normal org-mode-map (kbd "<tab>") nil)
+			(evil-define-key 'visual org-mode-map (kbd "<tab>") nil)
+
+			;; Fix tab bindings for terminal emacs.
+			(evil-define-key 'normal org-mode-map (kbd "TAB") 'org-cycle)
+			(evil-define-key 'visual org-mode-map (kbd "TAB") 'org-cycle)
 			;;(evil-define-key 'normal org-mode-map (kbd "g f") 'org-open-at-point)
 			(message "RUnning this")
 			(evil-org-set-key-theme))))))
