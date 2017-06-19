@@ -175,19 +175,6 @@
     (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))
   (add-hook 'term-exec-hook 'my-term-use-utf8)
     #+END_SRC
-    #+BEGIN_SRC emacs-lisp
-  ;; Allow pasting in the terminal
-  ;;(defun my-term-paste (&amp string)
-  ;; (interactive)
-  ;; (process-send-string
-  ;;  (get-buffer-process (current-buffer))
-  ;;  (if string string (current-kill 0))))
-  ;;(defun my-term-hook ()
-  ;;  (goto-address-mode)
-  ;;  (define-key term-raw-map "\C-y" 'my-term-paste))
-    #+END_SRC
-    #+BEGIN_SRC emacs-lisp
-    #+END_SRC
 *** Other miscellaneous stuff
     #+BEGIN_SRC emacs-lisp
 ;; Don't clobber things in the system clipboard when killing emacs
@@ -198,7 +185,7 @@
 
   ;; Don't paste at mouse, use the cursor.
   (setq mouse-yank-at-point t)
-  
+
   ;; It's never worth making me type out yes or no
   (defalias 'yes-or-no-p 'y-or-n-p)
     #+END_SRC
@@ -242,15 +229,15 @@
       (defconst visual-initialized t
 	"The visual configuration has been initilized.")
 
-      ; Disable menu bar
+      ;; Disable menu bar
       (menu-bar-mode -1)
-      ; scroll-bar
-      (toggle-scroll-bar -1)
-      ; tool bar
+      ;; Disable scroll-bar
+      (scroll-bar-mode -1)
+      ;; Disable tool bar
       (tool-bar-mode -1)
-      ; Better word wrapping
+      ;; Better word wrapping
       (add-hook 'text-mode-hook 'visual-line-mode)
-      ; Show opposite parentheses
+      ;; Show opposite parentheses
       (show-paren-mode 1)
       (setq show-paren-delay 0) ; Without delay
       )
@@ -265,9 +252,9 @@
     #+END_SRC
 
 ** Plugins
-   
+
    Now, the moment we've all been waiting for, various plugin installs and configuration.
-   
+
 *** auto-complete
 
     #+BEGIN_SRC emacs-lisp
@@ -343,10 +330,10 @@
      #+BEGIN_SRC emacs-lisp
 (defun sw/evil-mode/configure ()
   "Configure basic evil."
-  
-  ;; Default for term-mode should be emacs 
+
+  ;; Default for term-mode should be emacs
   (evil-set-initial-state 'term-mode 'emacs)
-  
+
   ;; esc should always quit: http://stackoverflow.com/a/10166400/61435
   (define-key evil-normal-state-map [escape] 'keyboard-quit)
   (define-key evil-visual-state-map [escape] 'keyboard-quit)
@@ -388,7 +375,6 @@
 			(evil-define-key 'normal org-mode-map (kbd "RET") 'org-cycle)
 			(evil-define-key 'visual org-mode-map (kbd "RET") 'org-cycle)
 			;;(evil-define-key 'normal org-mode-map (kbd "g f") 'org-open-at-point)
-			(message "RUnning this")
 			(evil-org-set-key-theme))))))
     #+END_SRC
 *** eyebrowse
@@ -397,8 +383,7 @@
 (use-package eyebrowse
   :ensure t
   :config
-  (progn (eyebrowse-mode t)
-	 ))
+  (eyebrowse-mode t))
     #+END_SRC
 *** flycheck
     A syntax checker.
@@ -420,9 +405,9 @@
     #+BEGIN_SRC emacs-lisp
       (use-package helm-make :ensure)
     #+END_SRC
-*** hydra 
+*** hydra
     A wacky key composition hotkey plugin.
-    
+
     #+BEGIN_SRC emacs-lisp
       (use-package hydra :ensure)
     #+END_SRC
@@ -450,7 +435,7 @@
     #+END_SRC
 *** magit
     A git porcelain.
-    
+
     #+BEGIN_SRC emacs-lisp
       (use-package magit
 	:ensure t
@@ -517,44 +502,34 @@
 
 *** whitespace-mode
     #+BEGIN_SRC emacs-lisp
-  (use-package whitespace
-    :diminish whitespace-mode
-    :config
-    (progn
-      (setq sw-show-trailing-whitespace t)
-      (defun sw//show-trailing-whitespace ()
-	(when sw-show-trailing-whitespace
-	  (set-face-attribute 'trailing-whitespace nil
-			      :background
-			      (face-attribute 'font-lock-comment-face
-					      :foreground))
-	  (setq show-trailing-whitespace 1)))
-      (add-hook 'prog-mode-hook 'sw//show-trailing-whitespace)
+      (use-package whitespace
+	:diminish whitespace-mode
+	:config
+	(progn
+	  (setq sw-show-trailing-whitespace t)
+	  (defun sw//show-trailing-whitespace ()
+	    (when sw-show-trailing-whitespace
+	      (set-face-attribute 'trailing-whitespace nil
+				  :background
+				  (face-attribute 'font-lock-comment-face
+						  :foreground))
+	      (setq show-trailing-whitespace 1)))
+	  (add-hook 'prog-mode-hook 'sw//show-trailing-whitespace)
 
-      (defun sw//set-whitespace-style-for-diff ()
-	"Whitespace configuration for `diff-mode'"
-	(setq-local whitespace-style '(face
-				       tabs
-				       tab-mark
-				       spaces
-				       space-mark
-				       trailing
-				       indentation::space
-				       indentation::tab
-				       newline
-				       newline-mark)))
-      (add-hook 'diff-mode-hook 'whitespace-mode)
-      (add-hook 'diff-mode-hook 'sw//set-whitespace-style-for-diff))
-    :config
-    (progn
-      (set-face-attribute 'whitespace-space nil
-			  :background nil
-			  :foreground (face-attribute 'font-lock-warning-face
-						      :foreground))
-      (set-face-attribute 'whitespace-tab nil
-			  :background nil)
-      (set-face-attribute 'whitespace-indentation nil
-			  :background nil)))
+	  (defun sw//set-whitespace-style-for-diff ()
+	    "Whitespace configuration for `diff-mode'"
+	    (setq-local whitespace-style '(face
+					   tabs
+					   tab-mark
+					   spaces
+					   space-mark
+					   trailing
+					   indentation::space
+					   indentation::tab
+					   newline
+					   newline-mark)))
+	  (add-hook 'diff-mode-hook 'whitespace-mode)
+	  (add-hook 'diff-mode-hook 'sw//set-whitespace-style-for-diff)))
     #+END_SRC
 *** indent-guide
     Show indent levels.
@@ -569,10 +544,17 @@
      ;; Tramp shouldn't forget password in session
      (setq-default password-cache t)
      (setq-default password-cache-expiry nil)
-    #+END_SRC 
+    #+END_SRC
 *** tramp-term
     #+BEGIN_SRC emacs-lisp
 (use-package tramp-term :ensure)
+    #+END_SRC
+*** which-key
+    #+BEGIN_SRC emacs-lisp
+    (use-package which-key :ensure
+    :diminish which-key-mode
+    :config
+    (which-key-mode))
     #+END_SRC
 *** yasnippet
     An easy to use snippet macro system.
@@ -586,11 +568,11 @@
   ;(define-key yas-minor-mode-map (kbd "TAB") 'yas-expand)
   (yas-global-mode 1)))
     #+END_SRC
-** Language Configurations
-   I will now describe my language specific settings and mode configurations.
-   Most of the stuff for configuring these can be autoloaded to save time at startup.
+* Language Configurations
+  I will now describe my language specific settings and mode configurations.
+  Most of the stuff for configuring these can be autoloaded to save time at startup.
 
-*** Ada
+** Ada
 
     #+BEGIN_SRC emacs-lisp
 ;; We can't autoload this since we need it to provide ada-mode hooks
@@ -601,52 +583,43 @@
   (package-update 'ada-mode '(5 2 1)))
     #+END_SRC
 
-*** C,C++
+** C,C++
 
-    #+BEGIN_SRC emacs-lisp
-     (defun c-enter-continues-comments ()
-       ;; FIXME need to create my own def for this to work.
-       ;;(evil-local-set-key 'normal (kbd "o") 'c-context-line-break)
-       (local-set-key (kbd "RET") 'c-context-line-break))
+   #+BEGIN_SRC emacs-lisp
+    (defun c-enter-continues-comments ()
+      ;; FIXME need to create my own def for this to work.
+      ;;(evil-local-set-key 'normal (kbd "o") 'c-context-line-break)
+      (local-set-key (kbd "RET") 'c-context-line-break))
 
-     ;; gem5 config,
-     ;; TODO: Auto add hook not to mode but to buffer if path contains gem5
-     (add-hook 'c-mode-common-hook (lambda ()
-				     ()
-				     (indent-guide-mode t)
-				     (sw/if-bound-eval 'indent-guide-mode '(indent-guide-mode t))
-				     (add-hook 'before-save-hook 'delete-trailing-whitespace)
+    ;; gem5 config,
+    ;; TODO: Auto add hook not to mode but to buffer if path contains gem5
+    (add-hook 'c-mode-common-hook (lambda ()
+				    (indent-guide-mode t)
+				    (sw/if-bound-eval 'indent-guide-mode '(indent-guide-mode t))
+				    (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-				     ;; Use line splitting
-				     (auto-fill-mode t)
-				     (setq current-fill-column 79)
+				    ;; Use line splitting
+				    (auto-fill-mode t)
+				    (setq current-fill-column 79)
+				    (setq whitespace-line-colum 79)
+				    ;; Turn on trailing whitespace highlighting (It's default on right now.)
+				    (setq whitespace-style '(face trailing lines))
+				    (whitespace-mode t)
 
-				     ;; Turn on whitespace highlighting
-				     (whitespace-mode t)
-				     (setq whitespace-style '(tabs trailing lines tab-mark))
-				     (setq whitespace-line-colum 79)
+				    ;; Use line numbers
+				    (nlinum-mode t)
 
-				     ;; Use line numbers
-				     (nlinum-mode t)
+				    ;;(spacemacs/toggle-highlight-long-lines-on)
+				    ;;(spacemacs/toggle-fill-column-indicator-on)
+				    (setq c-basic-offset 4)
+				    (c-set-offset 'access-label -2)
+				    (c-set-offset 'template-args-cont 4)
+				    (c-set-offset 'arglist-intro 4)
+				    (c-enter-continues-comments)
+				    (ws-butler-mode t)))
+   #+END_SRC
 
-				     ;;(spacemacs/toggle-highlight-long-lines-on)
-				     ;;(spacemacs/toggle-fill-column-indicator-on)
-				     (setq c-basic-offset 4)
-				     (c-set-offset 'access-label -2)
-				     (c-set-offset 'template-args-cont 4)
-				     (c-set-offset 'arglist-intro 4)
-				     (c-enter-continues-comments)
-				     (ws-butler-mode t)))
-    #+END_SRC
-
-*** Compilation Mode
-    #+BEGIN_SRC emacs-lisp
-  (add-hook 'compilation-mode-hook
-	    '(lambda ()
-	       (evil-define-key 'motion "[b" 'evil-next-buffer)
-	       (evil-define-key 'motion "]b" 'evil-prev-buffer)))
-    #+END_SRC
-*** VimL
+** VimL
     #+BEGIN_SRC emacs-lisp
 (use-package vimrc-mode
   :ensure t
@@ -654,23 +627,23 @@
   (add-to-list 'auto-mode-alist '("\\.vim\\(rc\\)?\\'" . vimrc-mode)))
     #+END_SRC
 
-*** Org
+** Org
 
-    Open a link with vim semantics in org mode.
-    #+BEGIN_SRC emacs-lisp
-     (defun sw-evil-org-open-link-or-file-at-point ()
-       "Try to open the link or if unable to do that try to open it as a file."
-       (interactive)
-       ;;(condition-case nil (org-open-at-point) (user-error (find-file-at-point))))
-       (condition-case nil (org-open-at-point) (user-error (find-file-at-point))))
+   Open a link with vim semantics in org mode.
+   #+BEGIN_SRC emacs-lisp
+    (defun sw-evil-org-open-link-or-file-at-point ()
+      "Try to open the link or if unable to do that try to open it as a file."
+      (interactive)
+      ;;(condition-case nil (org-open-at-point) (user-error (find-file-at-point))))
+      (condition-case nil (org-open-at-point) (user-error (find-file-at-point))))
 
-     (evil-define-key 'normal org-mode-map (kbd "g f") 'sw-evil-org-open-link-or-file-at-point)
-     
-     ;; The org open command should be marked as a jump (added to the jump list), it doesn't
-     ;; work great but it's better than nothing.
-     (evil-add-command-properties #'org-open-at-point :jump t)
-     
-    #+END_SRC
+    (evil-define-key 'normal org-mode-map (kbd "g f") 'sw-evil-org-open-link-or-file-at-point)
+
+    ;; The org open command should be marked as a jump (added to the jump list), it doesn't
+    ;; work great but it's better than nothing.
+    (evil-add-command-properties #'org-open-at-point :jump t)
+
+   #+END_SRC
 
 * Keybindings
   Some keybindings that aren't language specific. Language specific keybings are in the [[Language Configurations]] section.
@@ -685,13 +658,13 @@
 		  ;; Kill the current buffer without leaving the split
 		  (evil-ex-define-cmd "kb[uffer]" 'kill-this-buffer)
 		  ;; Open up a list of open buffers
-		  (evil-ex-define-cmd "b[uffers]" 'list-buffers)
+		  (evil-ex-define-cmd "b[uffers]" 'buffer-menu)
 		  ;; Open an ansi terminal
 		  (defun sw/evil-split-term () (interactive)
 			 (progn
 			   (evil-window-new nil nil)
 			   (ansi-term)))
-			   
+
 		  (defun sw/evil-vsplit-term () (interactive)
 			 (progn
 			   (evil-window-vnew nil nil)
@@ -701,21 +674,26 @@
 		  (evil-ex-define-cmd "vt[erm]" 'sw/evil-vsplit-term)
 		  (evil-ex-define-cmd "st[erm]" 'sw/evil-split-term)
 
-		  (define-key evil-normal-state-map "[b" 'evil-next-buffer)
-		  (define-key evil-normal-state-map "]b" 'evil-prev-buffer))
+
+		  (define-key evil-motion-state-map "[b" 'evil-next-buffer)
+		  (define-key evil-motion-state-map "]b" 'evil-prev-buffer)
+		  ;;(define-key evil-normal-state-map "[b" 'evil-next-buffer)
+		  ;;(define-key evil-normal-state-map "]b" 'evil-prev-buffer)
+)
 
 		(sw/evil-mode/configure-bindings)
    #+END_SRC
 *** TODO Add ivy locate binding
 *** TODO Add ivy ag-or-grep binding
-    
+
 ** term-mode
    #+BEGIN_SRC emacs-lisp
      (eval-after-load "term"
        (progn
        ;; Add pasting from emacs as default to the terminal
-	 (define-key term-raw-map (kbd "C-y") 'term-paste)
+	 (define-key term-raw-map (kbd "C-S-V") 'term-paste)
 
+	 ;; (key-chord-define-local "C-w C-w" '(lambda () (interactive) (other-window 1)))
 	 ;; Add changing the window to the terminal
 	 (define-key term-raw-map (kbd "C-w") nil)
 	 (define-key term-raw-map (kbd "C-w C-w") '(lambda () (interactive) (other-window 1)))))
@@ -726,12 +704,12 @@
        "Open the messages buffer."
        (interactive)
        (switch-to-buffer "*Messages*"))
-       
+
      (defun scratch ()
        "Open the scratch buffer."
        (interactive)
        (switch-to-buffer "*scratch*"))
-       
+
      (defun edit-config ()
        "Open my config file for editing."
        (interactive)
@@ -746,5 +724,3 @@
   This is some reminder stuff incase I ever want to change or do these things...
 
 ** [[https://github.com/noctuid/evil-guide#keybindings-and-states][Add an evil keybinding]]
-   
-   
