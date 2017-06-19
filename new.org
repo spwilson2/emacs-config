@@ -601,14 +601,6 @@
   (package-update 'ada-mode '(5 2 1)))
     #+END_SRC
 
-*** VimL
-    #+BEGIN_SRC emacs-lisp
-(use-package vimrc-mode
-  :ensure t
-  :config
-  (add-to-list 'auto-mode-alist '("\\.vim\\(rc\\)?\\'" . vimrc-mode)))
-    #+END_SRC
-
 *** C,C++
 
     #+BEGIN_SRC emacs-lisp
@@ -645,6 +637,21 @@
 				     (c-set-offset 'arglist-intro 4)
 				     (c-enter-continues-comments)
 				     (ws-butler-mode t)))
+    #+END_SRC
+
+*** Compilation Mode
+    #+BEGIN_SRC emacs-lisp
+  (add-hook 'compilation-mode-hook
+	    '(lambda ()
+	       (evil-define-key 'motion "[b" 'evil-next-buffer)
+	       (evil-define-key 'motion "]b" 'evil-prev-buffer)))
+    #+END_SRC
+*** VimL
+    #+BEGIN_SRC emacs-lisp
+(use-package vimrc-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.vim\\(rc\\)?\\'" . vimrc-mode)))
     #+END_SRC
 
 *** Org
