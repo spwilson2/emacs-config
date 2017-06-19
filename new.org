@@ -194,7 +194,9 @@
 *** Set up repos
 
     #+BEGIN_SRC emacs-lisp
-; Turn of the annoying placement of package-initilize
+(require 'package)
+
+; Turn off the annoying placement of package-initilize
 (setq package--init-file-ensured t)
 
 (setq package-enable-at-startup nil)
