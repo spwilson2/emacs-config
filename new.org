@@ -219,7 +219,13 @@
 *** Add quelpa to install git libraries
 
     #+BEGIN_SRC emacs-lisp
-(use-package quelpa :ensure t)
+(use-package quelpa :ensure)
+    #+END_SRC
+
+*** Add common lisp
+    #+BEGIN_SRC emacs-lisp
+(use-package cl :ensure)
+(use-package let-alist :ensure)
     #+END_SRC
 
 ** Setup visual preferences
