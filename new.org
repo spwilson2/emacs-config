@@ -452,25 +452,27 @@
 *** nlinum
     A faster line numbering system
     #+BEGIN_SRC emacs-lisp
-(use-package nlinum
-  :ensure t
-  :config
-  (progn
-    (unless window-system
-    (add-hook 'linum-before-numbering-hook
-		(lambda ()
-		(setq-local linum-format-fmt
-			    (let ((w (length (number-to-string
-						(count-lines (point-min) (point-max))))))
-				(concat "%" (number-to-string w) "d"))))))
+      (use-package nlinum
+	:ensure t
+	:config
+	(progn
+	  ;; On window systems just use fringe as separator, terminal we use a bar.
+	  (setq-local sw-linum-separator (if window-system "" "|"))
 
-    (defun linum-format-func (line)
-    (concat
-    (propertize (format linum-format-fmt line) 'face 'linum)
-    (propertize " " 'face 'mode-line)))
+	  ;; Precaclulate the line number width.
+	  (add-hook 'linum-before-numbering-hook
+		    (lambda ()
+		      (setq-local linum-format-fmt
+				  (let ((w (length (number-to-string
+						    (count-lines (point-min) (point-max))))))
+				    (concat "%" (number-to-string w) "d" sw-linum-separator)))))
 
-    (unless window-system
-    (setq linum-format 'linum-format-func))))
+	  (defun linum-format-func (line)
+	    (concat
+	     (propertize (format linum-format-fmt line) 'face 'linum)
+	     (propertize " " 'face 'mode-line)))
+
+	  (setq linum-format 'linum-format-func )))
     #+END_SRC
 *** persp-mode
     #+BEGIN_SRC emacs-lisp
@@ -650,38 +652,38 @@
 
 ** evil-mode
    #+BEGIN_SRC emacs-lisp
-		(defun sw/evil-mode/configure-bindings ()
+		     (defun sw/evil-mode/configure-bindings ()
 
-		  ;;(define-key evil-ex-map "e " 'ido-find-file)
-		  ;;(define-key evil-ex-map "b " 'ido-switch-buffer)
+		       ;;(define-key evil-ex-map "e " 'ido-find-file)
+		       ;;(define-key evil-ex-map "b " 'ido-switch-buffer)
 
-		  ;; Kill the current buffer without leaving the split
-		  (evil-ex-define-cmd "kb[uffer]" 'kill-this-buffer)
-		  ;; Open up a list of open buffers
-		  (evil-ex-define-cmd "b[uffers]" 'buffer-menu)
-		  ;; Open an ansi terminal
-		  (defun sw/evil-split-term () (interactive)
-			 (progn
-			   (evil-window-new nil nil)
-			   (ansi-term)))
+		       ;; Kill the current buffer without leaving the split
+		       (evil-ex-define-cmd "kb[uffer]" 'kill-this-buffer)
+		       ;; Open up a list of open buffers
+		       (evil-ex-define-cmd "b[uffers]" 'buffer-menu)
+		       ;; Open an ansi terminal
+		       (defun sw/evil-split-term () (interactive)
+			      (progn
+				(evil-window-new nil nil)
+				(ansi-term my-term-shell)))
 
-		  (defun sw/evil-vsplit-term () (interactive)
-			 (progn
-			   (evil-window-vnew nil nil)
-			   (ansi-term)))
+		       (defun sw/evil-vsplit-term () (interactive)
+			      (progn
+				(evil-window-vnew nil nil)
+				(ansi-term my-term-shell)))
 
-		  (evil-ex-define-cmd "ter[minal]" 'ansi-term)
-		  (evil-ex-define-cmd "vt[erm]" 'sw/evil-vsplit-term)
-		  (evil-ex-define-cmd "st[erm]" 'sw/evil-split-term)
+		       (evil-ex-define-cmd "ter[minal]" 'ansi-term)
+		       (evil-ex-define-cmd "vt[erm]" 'sw/evil-vsplit-term)
+		       (evil-ex-define-cmd "st[erm]" 'sw/evil-split-term)
 
 
-		  (define-key evil-motion-state-map "[b" 'evil-next-buffer)
-		  (define-key evil-motion-state-map "]b" 'evil-prev-buffer)
-		  ;;(define-key evil-normal-state-map "[b" 'evil-next-buffer)
-		  ;;(define-key evil-normal-state-map "]b" 'evil-prev-buffer)
-)
+		       (define-key evil-motion-state-map "[b" 'evil-next-buffer)
+		       (define-key evil-motion-state-map "]b" 'evil-prev-buffer)
+		       ;;(define-key evil-normal-state-map "[b" 'evil-next-buffer)
+		       ;;(define-key evil-normal-state-map "]b" 'evil-prev-buffer)
+     )
 
-		(sw/evil-mode/configure-bindings)
+		     (sw/evil-mode/configure-bindings)
    #+END_SRC
 *** TODO Add ivy locate binding
 *** TODO Add ivy ag-or-grep binding
