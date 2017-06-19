@@ -1,21 +1,21 @@
 * Emacs configuration
-I follow a couple conventions for naming similar to those in spacemacs:
+  I follow a couple conventions for naming similar to those in spacemacs:
 
-Function names follow these conventions:
+  Function names follow these conventions:
 
-+ spacemacs/xxx is an interactive function called xxx
-+ spacemacs//xxx is a private function called xxx (implementation details)
-+ spacemacs|xxx is a macro called xxx
-+ Variables follow these conventions:
-+ spacemacs-xxx is a variable
-+ spacemacs--xxx is a private variable (implementation details)
+  + spacemacs/xxx is an interactive function called xxx
+  + spacemacs//xxx is a private function called xxx (implementation details)
+  + spacemacs|xxx is a macro called xxx
+  + Variables follow these conventions:
+  + spacemacs-xxx is a variable
+  + spacemacs--xxx is a private variable (implementation details)
 * Base emacs setup
 ** Set up emacs server
-  #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
     (when (require 'server nil t)
       (unless (server-running-p)
-        (server-start)))
-  #+END_SRC
+	(server-start)))
+   #+END_SRC
 
 ** Initialize some of utility functions
    #+BEGIN_SRC emacs-lisp
@@ -56,32 +56,32 @@ Function names follow these conventions:
      be updated only if the currently installed version is less than
      the version specified, even if a newer version is available."
        (unless package--initialized
-         (package-initialize t))
+	 (package-initialize t))
        (unless package-archive-contents
-         (package-refresh-contents))
+	 (package-refresh-contents))
        (let* ((current (cadr (assoc package package-alist)))
-              (current-version (if current (package-desc-version current) '(-1)))
-              (pkg-desc (cadr (assoc package package-archive-contents)))
-              (pkg-version (and pkg-desc (package-desc-version pkg-desc)))
-              (target-version (or (and (stringp version) (version-to-list version))
-                                  version
-                                  pkg-version)))
-         (when (version-list-< current-version target-version)
-           (if (null pkg-desc)
-               (error "Package `%s' not found in package archives" package))
-           (if (version-list-< pkg-version target-version)
-               (error "A suitable version of `%s' is not available" package))
-           (package-install pkg-desc)
-           (if current
-               (package-delete current)))
-         nil))
+	      (current-version (if current (package-desc-version current) '(-1)))
+	      (pkg-desc (cadr (assoc package package-archive-contents)))
+	      (pkg-version (and pkg-desc (package-desc-version pkg-desc)))
+	      (target-version (or (and (stringp version) (version-to-list version))
+				  version
+				  pkg-version)))
+	 (when (version-list-< current-version target-version)
+	   (if (null pkg-desc)
+	       (error "Package `%s' not found in package archives" package))
+	   (if (version-list-< pkg-version target-version)
+	       (error "A suitable version of `%s' is not available" package))
+	   (package-install pkg-desc)
+	   (if current
+	       (package-delete current)))
+	 nil))
    #+END_SRC
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
   (defun sw/if-bound-eval (bound-item func)
     "If the given lexical is bound eval the expression"
     (if (boundp 'bound-item) (eval func)))
 
-#+END_SRC
+   #+END_SRC
 ** Initialize various directory paths.
 *** Name this config
     #+BEGIN_SRC emacs-lisp
@@ -89,7 +89,7 @@ Function names follow these conventions:
 	"The path to my configuration file.")
     #+END_SRC
 *** Create a directory for temporary stuff
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
      (defconst sw-tmp-local-dir
        "~/.emacs.d/.tmp"
        "My dir for storing random stuff")
@@ -103,10 +103,10 @@ Function names follow these conventions:
      (setq savehist-file (concat (file-name-as-directory sw-tmp-local-dir) "history"))
 
      (setq custom-file (concat sw-dotfiles-dir "custom.el"))
-   #+END_SRC
+    #+END_SRC
 
 *** Add backup dir paths
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
      (defconst
        sw-backups-dir (sw/join-dirs sw-tmp-local-dir "backups")
        "Backup directory")
@@ -116,24 +116,24 @@ Function names follow these conventions:
 
      (make-directory sw-backups-dir t)
      (make-directory sw-autosaves-dir t)
-   #+END_SRC
+    #+END_SRC
 
 *** Set the org mode archive
-#+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 (setq org-archive-location "~/.emacs.d/archive/archive.org")
-#+END_SRC
+    #+END_SRC
 *** Save the history and custom file in temp too
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 (make-directory (setq sw-tmp-local-dir (concat sw-dotfiles-dir ".tmp/")) t)
 
 ;; Command history will be saved to this.
 (setq savehist-file (concat (file-name-as-directory sw-tmp-local-dir) "history"))
 
 (setq custom-file (concat sw-dotfiles-dir "custom.el"))
-   #+END_SRC
+    #+END_SRC
 
 *** Configure some other backup stuff while we're at it
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
      (setq
       backup-by-copying t  ; Don't clobber symlinks
       backup-directory-alist `((".*" . ,sw-backups-dir))
@@ -142,7 +142,7 @@ Function names follow these conventions:
       kept-new-versions 6
       kept-old-versions 2
       version-control t)   ; Use versioned backups
-   #+END_SRC
+    #+END_SRC
 ** Do other default emacs customization
 *** Set default browser
     #+BEGIN_SRC emacs-lisp
@@ -151,31 +151,31 @@ Function names follow these conventions:
 	browse-url-generic-program "google-chrome")
     #+END_SRC
 *** Fix some ansi-term stuff
-#+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 ;; Close the terminal buffer once it exits
 ;; http://echosa.github.io/blog/2012/06/06/improving-ansi-term/
 (defadvice term-sentinel (around my-advice-term-sentinel (proc msg))
   (if (memq (process-status proc) '(signal exit))
       (let ((buffer (process-buffer proc)))
-        ad-do-it
-        (kill-buffer buffer))
+	ad-do-it
+	(kill-buffer buffer))
     ad-do-it))
 (ad-activate 'term-sentinel)
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
+    #+END_SRC
+    #+BEGIN_SRC emacs-lisp
   ;; Always use bash as default shell
   (defvar my-term-shell "/bin/bash")
   (defadvice ansi-term (before force-bash)
     (interactive (list my-term-shell)))
   (ad-activate 'ansi-term)
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
+    #+END_SRC
+    #+BEGIN_SRC emacs-lisp
   ;; Use utf-8 encoding
   (defun my-term-use-utf8 ()
     (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))
   (add-hook 'term-exec-hook 'my-term-use-utf8)
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
+    #+END_SRC
+    #+BEGIN_SRC emacs-lisp
   ;; Allow pasting in the terminal
   ;;(defun my-term-paste (&amp string)
   ;; (interactive)
@@ -185,9 +185,9 @@ Function names follow these conventions:
   ;;(defun my-term-hook ()
   ;;  (goto-address-mode)
   ;;  (define-key term-raw-map "\C-y" 'my-term-paste))
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-#+END_SRC
+    #+END_SRC
+    #+BEGIN_SRC emacs-lisp
+    #+END_SRC
 *** Other miscellaneous stuff
     #+BEGIN_SRC emacs-lisp
 ;; Don't clobber things in the system clipboard when killing emacs
@@ -206,7 +206,7 @@ Function names follow these conventions:
 ** Set up package management
 *** Set up repos
 
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 ; Turn of the annoying placement of package-initilize
 (setq package--init-file-ensured t)
 
@@ -215,23 +215,25 @@ Function names follow these conventions:
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
 (package-initialize)
-   #+END_SRC
+    #+END_SRC
 
 *** Use use-package to manage package startup and download
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 ; Automatically install package-install
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 
 (eval-when-compile
-  (require 'use-package))
-   #+END_SRC
+(progn
+  (require 'diminish)
+  (require 'use-package)))
+    #+END_SRC
 *** Add quelpa to install git libraries
 
-#+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 (use-package quelpa :ensure t)
-#+END_SRC
+    #+END_SRC
 
 ** Setup visual preferences
    #+BEGIN_SRC emacs-lisp
@@ -255,17 +257,17 @@ Function names follow these conventions:
 )
    #+END_SRC
 *** Use zenburn as the colorscheme
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 (use-package zenburn-theme
 		 :ensure t
 		 :init
 		 (progn (load-theme 'zenburn t)))
-   #+END_SRC
+    #+END_SRC
 
 ** Plugins
-
-Now, the moment we've all been waiting for, various plugin installs and configuration.
-
+   
+   Now, the moment we've all been waiting for, various plugin installs and configuration.
+   
 *** auto-complete
 
     #+BEGIN_SRC emacs-lisp
@@ -280,10 +282,14 @@ Now, the moment we've all been waiting for, various plugin installs and configur
      (setq ac-comphist-file (concat sw-tmp-local-dir "ac-comphist.dat"))))
     #+END_SRC
 
+*** counsel...
+    #+BEGIN_SRC emacs-lisp
+      (use-package counsel :ensure t)
+    #+END_SRC
 *** cscope
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
    (use-package xcscope :ensure t)
-   #+END_SRC
+    #+END_SRC
 *** evil-mode
 
 **** Do some stuff before we initialize evil
@@ -298,39 +304,39 @@ Now, the moment we've all been waiting for, various plugin installs and configur
      #+END_SRC
 
 **** Install the actual package
-   #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC emacs-lisp
      (use-package evil
        :ensure t
        :diminish undo-tree-mode
        :init
        (progn
-         ;; if we don't have this evil overwrites the cursor color
-         ;; (setq evil-default-cursor t)
+	 ;; if we don't have this evil overwrites the cursor color
+	 ;; (setq evil-default-cursor t)
 
-         ;; TODO: Probably will remove this package in favor of learning how to
-         ;; do this on my own.
-         ;; This has to be before we invoke evil-mode due to:
-         ;; https://github.com/cofi/evil-leader/issues/10
-         (use-package evil-leader
-           :ensure t
-           :config
-           (progn
-             (evil-leader/set-leader ",")
-             (global-evil-leader-mode))))
+	 ;; TODO: Probably will remove this package in favor of learning how to
+	 ;; do this on my own.
+	 ;; This has to be before we invoke evil-mode due to:
+	 ;; https://github.com/cofi/evil-leader/issues/10
+	 (use-package evil-leader
+	   :ensure t
+	   :config
+	   (progn
+	     (evil-leader/set-leader ",")
+	     (global-evil-leader-mode))))
 
        :config
        (progn
-         (use-package evil-tabs
-           :init
-           (quelpa '(evil-tabs :repo "spwilson2/evil-tabs" :fetcher github))
-           :config
-           (progn
-             (global-evil-tabs-mode t)))
+	 (use-package evil-tabs
+	   :init
+	   (quelpa '(evil-tabs :repo "spwilson2/evil-tabs" :fetcher github))
+	   :config
+	   (progn
+	     (global-evil-tabs-mode t)))
 
-         ;; MUST BE AFTER evil-tabs else it breaks initial evil
-         ;; https://github.com/krisajenkins/evil-tabs/issues/12
-         (evil-mode 1)))
-   #+END_SRC
+	 ;; MUST BE AFTER evil-tabs else it breaks initial evil
+	 ;; https://github.com/krisajenkins/evil-tabs/issues/12
+	 (evil-mode 1)))
+     #+END_SRC
 
 **** Do some configuration
 
@@ -351,15 +357,15 @@ Now, the moment we've all been waiting for, various plugin installs and configur
   (define-key minibuffer-local-isearch-map [escape] 'abort-recursive-edit))
 
 (sw/evil-mode/configure)
-   #+END_SRC
+     #+END_SRC
 
 *** evil-leader
-#+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 ;;  (use-package evil-mode
 ;;    :ensure
 ;;    :config
 ;;    (global-evil-leader-mode))
-#+END_SRC
+    #+END_SRC
 *** evil-org-mode
     #+BEGIN_SRC emacs-lisp
       (use-package evil-org
@@ -373,60 +379,94 @@ Now, the moment we've all been waiting for, various plugin installs and configur
 		    (lambda ()
 		      (progn
 			;; Remove the old bindings
-			(evil-define-key 'normal evil-org-mode-map (kbd "<tab>") nil)
-			(evil-define-key 'visual evil-org-mode-map (kbd "<tab>") nil)
-			(evil-define-key 'normal org-mode-map (kbd "<tab>") nil)
-			(evil-define-key 'visual org-mode-map (kbd "<tab>") nil)
+			;; (evil-define-key 'normal evil-org-mode-map (kbd "<tab>") nil)
+			;; (evil-define-key 'visual evil-org-mode-map (kbd "<tab>") nil)
+			;; (evil-define-key 'normal org-mode-map (kbd "<tab>") nil)
+			;; (evil-define-key 'visual org-mode-map (kbd "<tab>") nil)
 
-			;; Fix tab bindings for terminal emacs.
-			(evil-define-key 'normal org-mode-map (kbd "TAB") 'org-cycle)
-			(evil-define-key 'visual org-mode-map (kbd "TAB") 'org-cycle)
+			;; Use enter for opening for terminal emacs.
+			(evil-define-key 'normal org-mode-map (kbd "RET") 'org-cycle)
+			(evil-define-key 'visual org-mode-map (kbd "RET") 'org-cycle)
 			;;(evil-define-key 'normal org-mode-map (kbd "g f") 'org-open-at-point)
 			(message "RUnning this")
 			(evil-org-set-key-theme))))))
     #+END_SRC
 *** eyebrowse
-A tab system
-   #+BEGIN_SRC emacs-lisp
+    A tab system
+    #+BEGIN_SRC emacs-lisp
 (use-package eyebrowse
   :ensure t
   :config
   (progn (eyebrowse-mode t)
 	 ))
-   #+END_SRC
+    #+END_SRC
 *** flycheck
-A syntax checker.
-   #+BEGIN_SRC emacs-lisp
+    A syntax checker.
+    #+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :ensure t
   :config
   (progn
     (setq flycheck-highlighting-mode nil)
     (global-flycheck-mode)))
-   #+END_SRC
+    #+END_SRC
+*** ggtags
+    Frontend to the global tag system.
+     #+BEGIN_SRC emacs-lisp
+    (use-package ggtags :ensure)
+     #+END_SRC
+**** TODO [[https://github.com/leoliu/ggtags][configure]]
+*** helm-make
+    #+BEGIN_SRC emacs-lisp
+      (use-package helm-make :ensure)
+    #+END_SRC
+*** hydra 
+    A wacky key composition hotkey plugin.
+    
+    #+BEGIN_SRC emacs-lisp
+      (use-package hydra :ensure)
+    #+END_SRC
 *** ivy
-A list narrowing fuzzy completion system.
-   #+BEGIN_SRC emacs-lisp
-(use-package ivy :ensure t
-  :diminish (ivy-mode . "")
-  :config
-  (ivy-mode 1)
-  ;; add ‘recentf-mode’ and bookmarks to ‘ivy-switch-buffer’.
-  (setq ivy-use-virtual-buffers t)
-  ;; number of result lines to display
-  (setq ivy-height 10)
-  ;; does not count candidates
-  (setq ivy-count-format "")
-  ;; no regexp by default
-  (setq ivy-initial-inputs-alist nil)
-  ;; configure regexp engine.
-  (setq ivy-re-builders-alist
-	;; allow input not in order
-        '((t   . ivy--regex-ignore-order))))
-   #+END_SRC
+    A list narrowing fuzzy completion system.
+    #+BEGIN_SRC emacs-lisp
+     (use-package ivy :ensure t
+       :diminish (ivy-mode . "")
+       :config
+       (ivy-mode 1)
+       ;; Hide the .. and . directories
+       (setq ivy-extra-directories nil)
+       ;; add ‘recentf-mode’ and bookmarks to ‘ivy-switch-buffer’.
+       (setq ivy-use-virtual-buffers t)
+       ;; number of result lines to display
+       (setq ivy-height 10)
+       ;; does not count candidates
+       (setq ivy-count-format "")
+       ;; No regexp by default
+       (setq ivy-initial-inputs-alist nil)
+       ;; configure regexp engine.
+       (setq ivy-re-builders-alist
+	     ;; allow input not in order
+	     '((t   . ivy--regex-ignore-order))))
+    #+END_SRC
+*** magit
+    A git porcelain.
+    
+    #+BEGIN_SRC emacs-lisp
+      (use-package magit
+	:ensure t
+	:config
+	;; use ivy to autocomplete
+	(setq magit-completing-read-function 'ivy-completing-read))
+    #+END_SRC
+**** evil-magit
+     Adds keybindings to magit.
+     #+BEGIN_SRC emacs-lisp
+       ;; Adds keybindings for magit that fit evil.
+       (use-package evil-magit :ensure)
+     #+END_SRC
 *** nlinum
-A faster line numbering system
-   #+BEGIN_SRC emacs-lisp
+    A faster line numbering system
+    #+BEGIN_SRC emacs-lisp
 (use-package nlinum
   :ensure t
   :config
@@ -446,87 +486,98 @@ A faster line numbering system
 
     (unless window-system
     (setq linum-format 'linum-format-func))))
-   #+END_SRC
+    #+END_SRC
 *** persp-mode
     #+BEGIN_SRC emacs-lisp
       (use-package persp-mode
 	:ensure t)
     #+END_SRC
+*** projectile
+    #+BEGIN_SRC emacs-lisp
+      (use-package projectile
+	:ensure
+	:diminish projectile-mode
+	:config
+	(progn
+	  (projectile-mode t)
+	  ;; Use ivy for completion in projectile
+	  (setq projectile-completion-system 'ivy)))
+    #+END_SRC
 *** smooth-scrolling
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
      (use-package smooth-scrolling
        :ensure t
        :config
        (progn
-         (smooth-scrolling-mode 1)
-         (setq-default smooth-scroll-margin 7)))
-   #+END_SRC
-   #+BEGIN_SRC emacs-lisp
-   #+END_SRC
+	 (smooth-scrolling-mode 1)
+	 (setq-default smooth-scroll-margin 7)))
+    #+END_SRC
+    #+BEGIN_SRC emacs-lisp
+    #+END_SRC
 
 *** whitespace-mode
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
   (use-package whitespace
-    :defer t
-    :init
+    :diminish whitespace-mode
+    :config
     (progn
       (setq sw-show-trailing-whitespace t)
       (defun sw//show-trailing-whitespace ()
-        (when sw-show-trailing-whitespace
-          (set-face-attribute 'trailing-whitespace nil
-                              :background
-                              (face-attribute 'font-lock-comment-face
-                                              :foreground))
-          (setq show-trailing-whitespace 1)))
+	(when sw-show-trailing-whitespace
+	  (set-face-attribute 'trailing-whitespace nil
+			      :background
+			      (face-attribute 'font-lock-comment-face
+					      :foreground))
+	  (setq show-trailing-whitespace 1)))
       (add-hook 'prog-mode-hook 'sw//show-trailing-whitespace)
 
       (defun sw//set-whitespace-style-for-diff ()
-        "Whitespace configuration for `diff-mode'"
-        (setq-local whitespace-style '(face
-                                       tabs
-                                       tab-mark
-                                       spaces
-                                       space-mark
-                                       trailing
-                                       indentation::space
-                                       indentation::tab
-                                       newline
-                                       newline-mark)))
+	"Whitespace configuration for `diff-mode'"
+	(setq-local whitespace-style '(face
+				       tabs
+				       tab-mark
+				       spaces
+				       space-mark
+				       trailing
+				       indentation::space
+				       indentation::tab
+				       newline
+				       newline-mark)))
       (add-hook 'diff-mode-hook 'whitespace-mode)
       (add-hook 'diff-mode-hook 'sw//set-whitespace-style-for-diff))
     :config
     (progn
       (set-face-attribute 'whitespace-space nil
-                          :background nil
-                          :foreground (face-attribute 'font-lock-warning-face
-                                                      :foreground))
+			  :background nil
+			  :foreground (face-attribute 'font-lock-warning-face
+						      :foreground))
       (set-face-attribute 'whitespace-tab nil
-                          :background nil)
+			  :background nil)
       (set-face-attribute 'whitespace-indentation nil
-                          :background nil)))
-   #+END_SRC
+			  :background nil)))
+    #+END_SRC
 *** indent-guide
     Show indent levels.
 
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 (use-package indent-guide :ensure)
-   #+END_SRC
+    #+END_SRC
 
 *** tramp
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
      (setq tramp-persistency-file-name (sw/join-dirs sw-tmp-local-dir "tramp"))
      ;; Tramp shouldn't forget password in session
      (setq-default password-cache t)
      (setq-default password-cache-expiry nil)
-   #+END_SRC 
+    #+END_SRC 
 *** tramp-term
-#+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 (use-package tramp-term :ensure)
-#+END_SRC
+    #+END_SRC
 *** yasnippet
     An easy to use snippet macro system.
 
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
   :ensure t
   :diminish yas-minor-mode
@@ -534,33 +585,33 @@ A faster line numbering system
   (progn
   ;(define-key yas-minor-mode-map (kbd "TAB") 'yas-expand)
   (yas-global-mode 1)))
-   #+END_SRC
+    #+END_SRC
 ** Language Configurations
    I will now describe my language specific settings and mode configurations.
    Most of the stuff for configuring these can be autoloaded to save time at startup.
 
 *** Ada
 
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 ;; We can't autoload this since we need it to provide ada-mode hooks
 (use-package ada-mode
   :ensure t
   :init
   ;; Make sure we are using a version that is recent enough (has 2012 ada support)
   (package-update 'ada-mode '(5 2 1)))
-   #+END_SRC
+    #+END_SRC
 
 *** VimL
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
 (use-package vimrc-mode
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.vim\\(rc\\)?\\'" . vimrc-mode)))
-   #+END_SRC
+    #+END_SRC
 
 *** C,C++
 
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
      (defun c-enter-continues-comments ()
        ;; FIXME need to create my own def for this to work.
        ;;(evil-local-set-key 'normal (kbd "o") 'c-context-line-break)
@@ -569,37 +620,37 @@ A faster line numbering system
      ;; gem5 config,
      ;; TODO: Auto add hook not to mode but to buffer if path contains gem5
      (add-hook 'c-mode-common-hook (lambda ()
-                                     ()
-                                     (indent-guide-mode t)
-                                     (sw/if-bound-eval 'indent-guide-mode '(indent-guide-mode t))
-                                     (add-hook 'before-save-hook 'delete-trailing-whitespace)
+				     ()
+				     (indent-guide-mode t)
+				     (sw/if-bound-eval 'indent-guide-mode '(indent-guide-mode t))
+				     (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-                                     ;; Use line splitting
-                                     (auto-fill-mode t)
-                                     (setq current-fill-column 79)
+				     ;; Use line splitting
+				     (auto-fill-mode t)
+				     (setq current-fill-column 79)
 
-                                     ;; Turn on whitespace highlighting
-                                     (whitespace-mode t)
-                                     (setq whitespace-style '(tabs trailing lines tab-mark))
-                                     (setq whitespace-line-colum 79)
+				     ;; Turn on whitespace highlighting
+				     (whitespace-mode t)
+				     (setq whitespace-style '(tabs trailing lines tab-mark))
+				     (setq whitespace-line-colum 79)
 
-                                     ;; Use line numbers
-                                     (nlinum-mode t)
+				     ;; Use line numbers
+				     (nlinum-mode t)
 
-                                     ;;(spacemacs/toggle-highlight-long-lines-on)
-                                     ;;(spacemacs/toggle-fill-column-indicator-on)
-                                     (setq c-basic-offset 4)
-                                     (c-set-offset 'access-label -2)
-                                     (c-set-offset 'template-args-cont 4)
-                                     (c-set-offset 'arglist-intro 4)
-                                     (c-enter-continues-comments)
-                                     (ws-butler-mode t)))
-   #+END_SRC
+				     ;;(spacemacs/toggle-highlight-long-lines-on)
+				     ;;(spacemacs/toggle-fill-column-indicator-on)
+				     (setq c-basic-offset 4)
+				     (c-set-offset 'access-label -2)
+				     (c-set-offset 'template-args-cont 4)
+				     (c-set-offset 'arglist-intro 4)
+				     (c-enter-continues-comments)
+				     (ws-butler-mode t)))
+    #+END_SRC
 
 *** Org
 
     Open a link with vim semantics in org mode.
-   #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
      (defun sw-evil-org-open-link-or-file-at-point ()
        "Try to open the link or if unable to do that try to open it as a file."
        (interactive)
@@ -615,27 +666,42 @@ A faster line numbering system
     #+END_SRC
 
 * Keybindings
-Some keybindings that aren't language specific. Language specific keybings are in the [[Language Configurations]] section.
+  Some keybindings that aren't language specific. Language specific keybings are in the [[Language Configurations]] section.
 
 ** evil-mode
-    #+BEGIN_SRC emacs-lisp
-    (defun sw/evil-mode/configure-bindings ()
+   #+BEGIN_SRC emacs-lisp
+		(defun sw/evil-mode/configure-bindings ()
 
-  ;;(define-key evil-ex-map "e " 'ido-find-file)
-  ;;(define-key evil-ex-map "b " 'ido-switch-buffer)
+		  ;;(define-key evil-ex-map "e " 'ido-find-file)
+		  ;;(define-key evil-ex-map "b " 'ido-switch-buffer)
 
-  ;; Kill the current buffer without leaving the split
-  (evil-ex-define-cmd "kb[uffer]" 'kill-this-buffer)
-  ;; Open up a list of open buffers
-  (evil-ex-define-cmd "b[uffers]" 'list-buffers)
-  ;; Open an ansi terminal
-  (evil-ex-define-cmd "term" 'ansi-term)
+		  ;; Kill the current buffer without leaving the split
+		  (evil-ex-define-cmd "kb[uffer]" 'kill-this-buffer)
+		  ;; Open up a list of open buffers
+		  (evil-ex-define-cmd "b[uffers]" 'list-buffers)
+		  ;; Open an ansi terminal
+		  (defun sw/evil-split-term () (interactive)
+			 (progn
+			   (evil-window-new nil nil)
+			   (ansi-term)))
+			   
+		  (defun sw/evil-vsplit-term () (interactive)
+			 (progn
+			   (evil-window-vnew nil nil)
+			   (ansi-term)))
 
-  (define-key evil-normal-state-map "[b" 'evil-next-buffer)
-  (define-key evil-normal-state-map "]b" 'evil-prev-buffer))
+		  (evil-ex-define-cmd "ter[minal]" 'ansi-term)
+		  (evil-ex-define-cmd "vt[erm]" 'sw/evil-vsplit-term)
+		  (evil-ex-define-cmd "st[erm]" 'sw/evil-split-term)
 
-  (sw/evil-mode/configure-bindings)
-    #+END_SRC
+		  (define-key evil-normal-state-map "[b" 'evil-next-buffer)
+		  (define-key evil-normal-state-map "]b" 'evil-prev-buffer))
+
+		(sw/evil-mode/configure-bindings)
+   #+END_SRC
+*** TODO Add ivy locate binding
+*** TODO Add ivy ag-or-grep binding
+    
 ** term-mode
    #+BEGIN_SRC emacs-lisp
      (eval-after-load "term"
@@ -653,6 +719,16 @@ Some keybindings that aren't language specific. Language specific keybings are i
        "Open the messages buffer."
        (interactive)
        (switch-to-buffer "*Messages*"))
+       
+     (defun scratch ()
+       "Open the scratch buffer."
+       (interactive)
+       (switch-to-buffer "*scratch*"))
+       
+     (defun edit-config ()
+       "Open my config file for editing."
+       (interactive)
+       (find-file sw-config-file))
 
      (defun reload-config ()
        "Reload my config file."
@@ -663,3 +739,5 @@ Some keybindings that aren't language specific. Language specific keybings are i
   This is some reminder stuff incase I ever want to change or do these things...
 
 ** [[https://github.com/noctuid/evil-guide#keybindings-and-states][Add an evil keybinding]]
+   
+   
