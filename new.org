@@ -606,7 +606,7 @@
     (add-hook 'c-mode-common-hook (lambda ()
 				    (indent-guide-mode t)
 				    (sw/if-bound-eval 'indent-guide-mode '(indent-guide-mode t))
-				    (add-hook 'before-save-hook 'delete-trailing-whitespace)
+				    (add-hook 'before-save-hook 'delete-trailing-whitespace nil t)
 
 				    ;; Use line splitting
 				    (auto-fill-mode t)
@@ -622,9 +622,13 @@
 				    ;;(spacemacs/toggle-highlight-long-lines-on)
 				    ;;(spacemacs/toggle-fill-column-indicator-on)
 				    (setq c-basic-offset 4)
+
+				    ;; Spaces not tabs
+				    (setq indent-tabs-mode nil)
 				    (c-set-offset 'access-label -2)
 				    (c-set-offset 'template-args-cont 4)
 				    (c-set-offset 'arglist-intro 4)
+				    (c-set-offset 'innamespace 0)
 				    (c-enter-continues-comments)
 				    (ws-butler-mode t)))
    #+END_SRC
