@@ -662,7 +662,7 @@
 * Keybindings
   Some keybindings that aren't language specific. Language specific keybings are in the [[Language Configurations]] section.
 
-** evil-mode
+** TODO evil-mode
    #+BEGIN_SRC emacs-lisp
 		     (defun sw/evil-mode/configure-bindings ()
 
@@ -675,7 +675,7 @@
 		       (evil-ex-define-cmd "b[uffers]" 'buffer-menu)
 
 		       ;; Open an ansi terminal in a new window
-		       (evil-define-command sw-new-term (&optional direction)
+		       (evil-define-command sw/new-term (&optional direction)
 			 "Splits the current window and opens a new ansi-term.
 			 If no direction is given, will open a horizontal split."
 			 :repeat nil
@@ -694,21 +694,24 @@
 			       (term-mode)
 			       (term-char-mode)))))
 		       (defun sw/evil-split-term () (interactive)
-			      (sw-new-term))
+			      (sw/new-term))
 
 		       (defun sw/evil-vsplit-term () (interactive)
-			      (sw-new-term (if evil-vsplit-window-right 'right 'left)))
+			      (sw/new-term (if evil-vsplit-window-right 'right 'left)))
 
 
 		       (evil-ex-define-cmd "ter[minal]" 'ansi-term)
 		       (evil-ex-define-cmd "vt[erm]" 'sw/evil-vsplit-term)
 		       (evil-ex-define-cmd "st[erm]" 'sw/evil-split-term)
 
+		       (defun sw/tabeff () (interactive) (progn (evil-tabs-tabedit) (call-interactively 'find-file)))
+		       (evil-ex-define-cmd "tabeff" 'sw/tabeff)
 
 		       (define-key evil-normal-state-map ",ff" 'find-file)
 		       (define-key evil-normal-state-map ",pff" 'projectile-find-file)
 		       (define-key evil-normal-state-map ",fo" 'projectile-find-other-file)
-		       
+		       (define-key evil-normal-state-map ",vc" 'projectile-vc)
+
 		       (define-key evil-motion-state-map "]b" 'evil-next-buffer)
 		       (define-key evil-motion-state-map "[b" 'evil-prev-buffer)
 		       ;;(define-key evil-normal-state-map "[b" 'evil-next-buffer)
@@ -737,6 +740,9 @@
 	 (define-key term-raw-map (kbd "C-c [b") 'evil-prev-buffer)
 	 (define-key term-raw-map (kbd "C-c C-t") 'evil-tabs-tabedit)
 	 (define-key term-raw-map (kbd "C-c :") 'evil-ex)
+	 (define-key term-raw-map (kbd "C-c f") 'find-file)
+	 
+	 ;;(evil-local-set-key 'normal term-mode "<escape>" 'evil-emacs-state)
 	 
 	 ;; TODO should map this to C-w raw output.
 	 (define-key term-raw-map (kbd "C-c C-w") '(lambda () (interactive) (other-window 1)))))
