@@ -673,24 +673,44 @@
 		       (evil-ex-define-cmd "kb[uffer]" 'kill-this-buffer)
 		       ;; Open up a list of open buffers
 		       (evil-ex-define-cmd "b[uffers]" 'buffer-menu)
-		       ;; Open an ansi terminal
+
+		       ;; Open an ansi terminal in a new window
+		       (evil-define-command sw-new-term (&optional direction)
+			 "Splits the current window and opens a new ansi-term.
+			 If no direction is given, will open a horizontal split."
+			 :repeat nil
+			 (interactive)
+			 (let ((new-window (split-window (selected-window) nil
+							 (if direction
+							     direction
+							     (if evil-split-window-below 'below 'above)))))
+			   (when (and (not count) evil-auto-balance-windows)
+			     (balance-windows (window-parent)))
+			   (let ((buffer (term-ansi-make-term (generate-new-buffer-name "*ansi-term*")
+					 my-term-shell)))
+			     (set-window-buffer new-window buffer)
+			     (select-window new-window)
+			     (with-current-buffer buffer
+			       (term-mode)
+			       (term-char-mode)))))
 		       (defun sw/evil-split-term () (interactive)
-			      (progn
-				(evil-window-new nil nil)
-				(ansi-term my-term-shell)))
+			      (sw-new-term))
 
 		       (defun sw/evil-vsplit-term () (interactive)
-			      (progn
-				(evil-window-vnew nil nil)
-				(ansi-term my-term-shell)))
+			      (sw-new-term (if evil-vsplit-window-right 'right 'left)))
+
 
 		       (evil-ex-define-cmd "ter[minal]" 'ansi-term)
 		       (evil-ex-define-cmd "vt[erm]" 'sw/evil-vsplit-term)
 		       (evil-ex-define-cmd "st[erm]" 'sw/evil-split-term)
 
 
-		       (define-key evil-motion-state-map "[b" 'evil-next-buffer)
-		       (define-key evil-motion-state-map "]b" 'evil-prev-buffer)
+		       (define-key evil-normal-state-map ",ff" 'find-file)
+		       (define-key evil-normal-state-map ",pff" 'projectile-find-file)
+		       (define-key evil-normal-state-map ",fo" 'projectile-find-other-file)
+		       
+		       (define-key evil-motion-state-map "]b" 'evil-next-buffer)
+		       (define-key evil-motion-state-map "[b" 'evil-prev-buffer)
 		       ;;(define-key evil-normal-state-map "[b" 'evil-next-buffer)
 		       ;;(define-key evil-normal-state-map "]b" 'evil-prev-buffer)
      )
@@ -710,7 +730,15 @@
 	 ;; (key-chord-define-local "C-w C-w" '(lambda () (interactive) (other-window 1)))
 	 ;; Add changing the window to the terminal
 	 (define-key term-raw-map (kbd "C-w") nil)
-	 (define-key term-raw-map (kbd "C-w C-w") '(lambda () (interactive) (other-window 1)))))
+	 (define-key term-raw-map (kbd "C-w C-w") '(lambda () (interactive) (other-window 1)))
+	 (define-key term-raw-map (kbd "C-w gt") '(lambda () (interactive) (evil-tabs-goto-tab nil)))
+	 (define-key term-raw-map (kbd "C-w gT") '(lambda () (interactive) (evil-tabs-goto-tab -1)))
+	 (define-key term-raw-map (kbd "C-w ]b") 'evil-next-buffer)
+	 (define-key term-raw-map (kbd "C-w [b") 'evil-prev-buffer)
+	 (define-key term-raw-map (kbd "C-w C-t") 'evil-tabs-tabedit)
+	 
+	 ;; TODO should map this to C-w raw output.
+	 (define-key term-raw-map (kbd "C-c C-w") '(lambda () (interactive) (other-window 1)))))
    #+END_SRC
 ** Other user friendly functions
    #+BEGIN_SRC emacs-lisp
