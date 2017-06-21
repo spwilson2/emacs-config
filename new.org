@@ -734,6 +734,10 @@
 	 ;; Add changing the window to the terminal
 	 (define-key term-raw-map (kbd "C-w") nil)
 	 (define-key term-raw-map (kbd "C-w C-w") '(lambda () (interactive) (other-window 1)))
+	 (define-key term-raw-map (kbd "C-w n") '(lambda () (interactive) (evil-tabs-goto-tab nil)))
+	 (define-key term-raw-map (kbd "C-w p") '(lambda () (interactive) (evil-tabs-goto-tab -1)))
+	 (define-key term-raw-map (kbd "C-w c") 'evil-tabs-tabedit)
+	 
 	 (define-key term-raw-map (kbd "C-c gt") '(lambda () (interactive) (evil-tabs-goto-tab nil)))
 	 (define-key term-raw-map (kbd "C-c gT") '(lambda () (interactive) (evil-tabs-goto-tab -1)))
 	 (define-key term-raw-map (kbd "C-c ]b") 'evil-next-buffer)
